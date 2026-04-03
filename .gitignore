@@ -1,0 +1,32 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Mac/Linux
+.DS_Store
+
+# MLFlow
+mlruns/
+mlflow.db
+
+# Vscode
+.vscode

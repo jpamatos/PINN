@@ -1,0 +1,42 @@
+[project]
+name = "pinn"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name="Jean Matos", email="jeanpierream@gmail.com" }
+]
+dependencies = [
+    "jupyter",
+    "numpy",
+    "plotly",
+    "torch",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+    "mlflow"
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
