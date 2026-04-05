@@ -2143,6 +2143,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "jupyter" },
+    { name = "mlflow" },
     { name = "numpy" },
     { name = "plotly" },
     { name = "torch" },
@@ -2158,6 +2159,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "jupyter" },
+    { name = "mlflow", specifier = ">=3.10.1" },
     { name = "numpy" },
     { name = "plotly" },
     { name = "torch" },
