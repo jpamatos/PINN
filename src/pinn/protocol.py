@@ -33,9 +33,7 @@ class PINNProtocol(Protocol):
         """
         ...
 
-    def pde_residual(
-        self, *args: Any, **kwargs: Any
-    ) -> torch.Tensor | tuple[torch.Tensor, ...]:
+    def pde_residual(self, *args: Any, **kwargs: Any) -> torch.Tensor:
         """Computes the PDE residual(s) for the physical system.
 
         Args:
@@ -82,7 +80,7 @@ class PINNProtocol(Protocol):
         """
         ...
 
-    def parameters(self) -> dict[str, Any]:
+    def parameters(self) -> torch.Tensor:
         """Returns the model's parameters.
 
         Returns:

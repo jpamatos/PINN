@@ -59,7 +59,7 @@ class BasePINN(nn.Module, ABC):
         return self.net(x)
 
     @abstractmethod
-    def pde_residual(self, *args, **kwargs) -> torch.Tensor | tuple[torch.Tensor, ...]:
+    def pde_residual(self, *args, **kwargs) -> torch.Tensor:
         """Computes the PDE residual(s).
 
         Must be implemented by subclasses to define the specific physics.
