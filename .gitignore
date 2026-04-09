@@ -30,3 +30,6 @@ mlflow.db
 
 # Vscode
 .vscode
+
+# Hydra
+outputs/
