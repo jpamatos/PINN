@@ -28,8 +28,6 @@ class Trainer:
 
     def __init__(
         self,
-        model: PINNProtocol,
-        loader: DataLoaderProtocol,
         epochs: int,
         lr: float,
         weight_ic: float = 10.0,
@@ -47,8 +45,6 @@ class Trainer:
             weight_bc (float, optional): Weight for the boundary condition loss. Defaults to 10.0.
             weight_pde (float, optional): Weight for the PDE residual loss. Defaults to 1.0.
         """
-        self.model = model
-        self.loader = loader
         self.criterion = nn.MSELoss()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.epochs = epochs
@@ -60,19 +56,21 @@ class Trainer:
         mlflow.set_tracking_uri("../mlruns")
         mlflow.set_experiment("pinn")
 
-    def train(self, epochs: int) -> None:
+    def train(
+        self, model: PINNProtocol, data_loader: DataLoaderProtocol
+    ) -> PINNProtocol:
         """Main training loop for the PINN.
 
         Args:
             epochs (int): Number of epochs to train for.
         """
-        if hasattr(self.loader, "device"):
-            self.loader.device = self.device
-        data = self.loader.load()
+        if hasattr(data_loader, "device"):
+            data_loader.device = self.device
+        data = data_loader.load()
 
-        self.model.to(self.device)
+        model.to(self.device)
         criterion = nn.MSELoss()
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        optimizer = torch.optim.Adam(model.parameters(), lr=self.lr)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode="min", factor=0.5, patience=100, min_lr=1e-6
         )
@@ -80,18 +78,18 @@ class Trainer:
             callback = MLflowCallback()
             params = {
                 "lr": 1e-3,
-                "epochs": epochs,
+                "epochs": self.epochs,
             }
-            params = params | self.model.static_params()
+            params = params | model.static_params()
             callback.log_params(params)
-            for epoch in range(epochs):
+            for epoch in range(self.epochs):
                 optimizer.zero_grad()
 
-                loss_ic = self.model.inital_conditions(criterion, data)
+                loss_ic = model.inital_conditions(criterion, data)
 
-                loss_bc = self.model.boundary_conditions(criterion, data)
+                loss_bc = model.boundary_conditions(criterion, data)
 
-                loss_pde = self.model.pde_residual(data)
+                loss_pde = model.pde_residual(data)
 
                 loss = (
                     self.weight_ic * loss_ic
@@ -112,4 +110,6 @@ class Trainer:
                 scheduler.step(loss.item())
 
                 if epoch % 100 == 0:
-                    print(f"Epoch {epoch}/{epochs}: loss={loss.item():.6f}")
+                    print(f"Epoch {epoch}/{self.epochs}: loss={loss.item():.6f}")
+
+        return model
