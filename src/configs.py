@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Any
 
 import torch
 
@@ -81,5 +80,5 @@ class Config:
     """
 
     trainer: TrainerConfig = field(default_factory=TrainerConfig)
-    model: Any = field(default_factory=BurgersPINNConfig)
-    data: Any = field(default_factory=BurgersDataConfig)
+    model: BurgersPINNConfig = field(default_factory=BurgersPINNConfig)
+    data: BurgersDataConfig = field(default_factory=BurgersDataConfig)
