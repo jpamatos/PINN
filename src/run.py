@@ -2,15 +2,13 @@ import hydra
 from hydra.core.config_store import ConfigStore
 from hydra.utils import instantiate
 
-from configs import BurgersDataConfig, BurgersPINNConfig, Config
+from configs import Config
 from data.protocol import DataLoaderProtocol
 from pinn.protocol import PINNProtocol
 from training.trainer import Trainer
 
 cs = ConfigStore.instance()
 cs.store(name="base_config", node=Config)
-cs.store(group="data", name="burgers_data", node=BurgersDataConfig)
-cs.store(group="model", name="burgers_pinn", node=BurgersPINNConfig)
 
 
 @hydra.main(config_path=None, config_name="base_config", version_base=None)
