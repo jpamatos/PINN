@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Any
 
 import torch
 
@@ -69,6 +70,48 @@ class BurgersDataConfig:
 
 
 @dataclass
+class HeatBarPINNConfig:
+    """
+    Configuration for the HeatBarPINN model.
+
+    Attributes:
+        _target_: The target class for instantiation.
+        num_hidden_layers: Number of hidden layers in the MLP.
+        hidden_units: Number of hidden units per layer.
+        activation: Activation function to use.
+    """
+
+    _target_: str = "pinn.heat_bar_pinn.HeatBarPINN"
+    num_hidden_layers: int = 8
+    hidden_units: int = 50
+    activation: str = "Tanh"
+
+
+@dataclass
+class HeatBarDataConfig:
+    """
+    Configuration for the HeatBarData loader.
+
+    Attributes:
+        _target_: The target class for instantiation.
+        n_f: Number of collocation points for PDE residual.
+        n_i: Number of initial condition points.
+        n_b: Number of boundary condition points.
+        x_range: Spatial x domain range.
+        y_range: Spatial y domain range.
+        t_range: Temporal domain range.
+    """
+
+    _target_: str = "data.heat_bar_data.HeatBarLoader"
+    n_f: int = 10000
+    n_i: int = 250
+    n_b: int = 250
+    x_range: list[int] = field(default_factory=lambda: [-1, 1])
+    y_range: list[int] = field(default_factory=lambda: [-1, 1])
+    t_range: list[int] = field(default_factory=lambda: [0, 1])
+
+
+@dataclass
 class Config:
     """
     Main configuration object aggregating all sub-configurations.
@@ -80,5 +123,5 @@ class Config:
     """
 
     trainer: TrainerConfig = field(default_factory=TrainerConfig)
-    model: BurgersPINNConfig = field(default_factory=BurgersPINNConfig)
-    data: BurgersDataConfig = field(default_factory=BurgersDataConfig)
+    model: Any = field(default_factory=HeatBarPINNConfig)
+    data: Any = field(default_factory=HeatBarDataConfig)
