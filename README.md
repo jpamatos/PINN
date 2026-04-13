@@ -31,16 +31,3 @@ Solves the momentum and continuity equations for incompressible flow:
 **Conditions:**
 - Initial: Taylor-Green vortex setup
 - Boundary: Periodic boundary conditions on domain $[0, 2\pi]$
-
-## Technical Stack
-
-- **Framework:** PyTorch
-- **Optimization:** Adam Optimizer with `ReduceLROnPlateau` scheduler
-- **Tracking:** MLflow for hyperparameter and loss logging
-- **Visualization:** Plotly (interactive heatmaps and surfaces) and Matplotlib
-
-## Implementation Details
-
-- **Automatic Differentiation:** Uses `torch.autograd` to calculate exact derivatives for PDE residuals.
-- **Architecture:** Typically 8 hidden layers of 50 neurons with Tanh activation.
-- **Loss Function:** Combined loss consisting of Initial Condition (IC), Boundary Condition (BC), and PDE residual terms.
