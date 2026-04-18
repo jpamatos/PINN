@@ -111,23 +111,23 @@ class HeatBarLoader(BaseLoader):
 
         # Boundary conditions
         t_b = np.random.uniform(self.t_range[0], self.t_range[1], self.n_b)
-        
+
         # Left boundary (x = x_min)
         x_bl = np.full_like(t_b, self.x_range[0])
         y_bl = np.random.uniform(self.y_range[0], self.y_range[1], self.n_b)
-        
+
         # Right boundary (x = x_max)
         x_br = np.full_like(t_b, self.x_range[1])
         y_br = np.random.uniform(self.y_range[0], self.y_range[1], self.n_b)
-        
+
         # Upper boundary (y = y_min)
         x_bu = np.random.uniform(self.x_range[0], self.x_range[1], self.n_b)
         y_bu = np.full_like(x_bu, self.y_range[0])
-        
+
         # Lower boundary (y = y_max)
         x_bd = np.random.uniform(self.x_range[0], self.x_range[1], self.n_b)
         y_bd = np.full_like(x_bd, self.y_range[1])
-        
+
         u_b = np.zeros_like(t_b)
 
         return HeatBarTensors(
