@@ -22,7 +22,7 @@ class TrainerConfig:
     _target_: str = "training.trainer.Trainer"
     epochs: int = 2000
     lr: float = 1e-3
-    weight_ic: float = 10.0
+    weight_ic: float = 50.0
     weight_bc: float = 10.0
     weight_pde: float = 1.0
 
@@ -112,6 +112,50 @@ class HeatBarDataConfig:
 
 
 @dataclass
+class StokesPINNConfig:
+    """
+    Configuration for the StokesPINN model.
+
+    Attributes:
+        _target_: The target class for instantiation.
+        num_hidden_layers: Number of hidden layers in the MLP.
+        hidden_units: Number of hidden units per layer.
+        nu: Kinematic viscosity parameter.
+        activation: Activation function to use.
+    """
+
+    _target_: str = "pinn.stokes_pinn.StokesPINN"
+    num_hidden_layers: int = 8
+    hidden_units: int = 50
+    nu: float = 0.1
+    activation: str = "Tanh"
+
+
+@dataclass
+class StokesDataConfig:
+    """
+    Configuration for the StokesData loader.
+
+    Attributes:
+        _target_: The target class for instantiation.
+        n_f: Number of collocation points for PDE residual.
+        n_i: Number of initial condition points.
+        n_b: Number of boundary condition points.
+        x_range: Spatial x domain range.
+        y_range: Spatial y domain range.
+        t_range: Temporal domain range.
+    """
+
+    _target_: str = "data.stokes_data.StokesLoader"
+    n_f: int = 10000
+    n_i: int = 2000
+    n_b: int = 1000
+    x_range: list[float] = field(default_factory=lambda: [0.0, 2 * torch.pi])
+    y_range: list[float] = field(default_factory=lambda: [0.0, 2 * torch.pi])
+    t_range: list[float] = field(default_factory=lambda: [0.0, 1.0])
+
+
+@dataclass
 class Config:
     """
     Main configuration object aggregating all sub-configurations.
@@ -123,5 +167,5 @@ class Config:
     """
 
     trainer: TrainerConfig = field(default_factory=TrainerConfig)
-    model: Any = field(default_factory=HeatBarPINNConfig)
-    data: Any = field(default_factory=HeatBarDataConfig)
+    model: Any = field(default_factory=StokesPINNConfig)
+    data: Any = field(default_factory=StokesDataConfig)
