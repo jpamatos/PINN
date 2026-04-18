@@ -48,13 +48,13 @@ class HeatBarPINN(BasePINN):
         """
         x, y, t = data.x_f, data.y_f, data.t_f
         u = self.forward(torch.cat([x, y, t], dim=1))
-        
+
         u_t = calculate_grad(u, t)
         u_x = calculate_grad(u, x)
         u_y = calculate_grad(u, y)
         u_xx = calculate_grad(u_x, x)
         u_yy = calculate_grad(u_y, y)
-        
+
         residual = u_t - u_xx - u_yy
         return torch.mean(residual**2)
 
@@ -89,12 +89,12 @@ class HeatBarPINN(BasePINN):
         u_br = self(torch.cat([data.x_br, data.y_br, data.t_b], dim=1))
         u_bu = self(torch.cat([data.x_bu, data.y_bu, data.t_b], dim=1))
         u_bd = self(torch.cat([data.x_bd, data.y_bd, data.t_b], dim=1))
-        
+
         loss_bl = criterion(u_bl, data.u_b)
         loss_br = criterion(u_br, data.u_b)
         loss_bu = criterion(u_bu, data.u_b)
         loss_bd = criterion(u_bd, data.u_b)
-        
+
         return loss_bl + loss_br + loss_bu + loss_bd
 
     def static_params(self) -> dict[str, Any]:
