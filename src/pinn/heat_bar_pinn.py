@@ -1,6 +1,7 @@
 from typing import Any
 
 import torch
+import torch.nn as nn
 
 from data.heat_bar_data import HeatBarTensors
 
@@ -96,6 +97,36 @@ class HeatBarPINN(BasePINN):
         loss_bd = criterion(u_bd, data.u_b)
 
         return loss_bl + loss_br + loss_bu + loss_bd
+
+    def evaluate(self, data_loader: Any) -> None:
+        """Evaluates the model and prints metrics.
+
+        Args:
+            data_loader (Any): Data loader for problem data.
+        """
+        data = data_loader.load()
+        self.eval()
+        criterion = nn.MSELoss()
+        with torch.no_grad():
+            loss_ic = self.inital_conditions(criterion, data)
+            loss_bc = self.boundary_conditions(criterion, data)
+
+            x, y, t = data.x_f, data.y_f, data.t_f
+            u_exact = (
+                torch.exp(-2 * (torch.pi**2) * t)
+                * torch.sin(torch.pi * x)
+                * torch.sin(torch.pi * y)
+            )
+            u_pred = self(torch.cat([x, y, t], dim=1))
+            rmse = torch.sqrt(torch.mean((u_pred - u_exact) ** 2))
+
+        loss_pde = self.pde_residual(data)
+
+        print("Heat Bar PINN Evaluation:")
+        print(f"  IC Loss:  {loss_ic.item():.6e}")
+        print(f"  BC Loss:  {loss_bc.item():.6e}")
+        print(f"  PDE Loss: {loss_pde.item():.6e}")
+        print(f"  RMSE (vs Analytical): {rmse.item():.6e}")
 
     def static_params(self) -> dict[str, Any]:
         """Gets the static parameters of the model.

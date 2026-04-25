@@ -94,6 +94,25 @@ class BurgersPINN(BasePINN, nn.Module):
         u_b2 = self(torch.cat([data.x_b2, data.t_b], dim=1))
         return criterion(u_b1, data.u_b) + criterion(u_b2, data.u_b)
 
+    def evaluate(self, data_loader: Any) -> None:
+        """Evaluates the model and prints metrics.
+
+        Args:
+            data_loader (Any): Data loader for problem data.
+        """
+        data = data_loader.load()
+        self.eval()
+        criterion = nn.MSELoss()
+        with torch.no_grad():
+            loss_ic = self.inital_conditions(criterion, data)
+            loss_bc = self.boundary_conditions(criterion, data)
+        loss_pde = self.pde_residual(data)
+
+        print("Burgers PINN Evaluation:")
+        print(f"  IC Loss:  {loss_ic.item():.6e}")
+        print(f"  BC Loss:  {loss_bc.item():.6e}")
+        print(f"  PDE Loss: {loss_pde.item():.6e}")
+
     def static_params(self) -> dict[str, Any]:
         """Gets the static parameters of the model.
 

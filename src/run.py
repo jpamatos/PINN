@@ -18,6 +18,7 @@ def main(cfg: Config) -> None:
 
     trainer: Trainer = instantiate(cfg.trainer)
     model = trainer.train(model=pinn, data_loader=data_loader)
+    model.evaluate(data_loader)
 
 
 if __name__ == "__main__":

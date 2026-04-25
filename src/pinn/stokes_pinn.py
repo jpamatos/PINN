@@ -132,6 +132,47 @@ class StokesPINN(BasePINN, nn.Module):
 
         return criterion(pred_b_l, pred_b_r) + criterion(pred_b_b, pred_b_u)
 
+    def evaluate(self, data_loader: Any) -> None:
+        """Evaluates the model and prints metrics.
+
+        Args:
+            data_loader (Any): Data loader for problem data.
+        """
+        data = data_loader.load()
+        self.eval()
+        criterion = nn.MSELoss()
+        with torch.no_grad():
+            loss_ic = self.inital_conditions(criterion, data)
+            loss_bc = self.boundary_conditions(criterion, data)
+
+            x, y, t = data.x_f, data.y_f, data.t_f
+            Re = 1.0 / self.nu
+            u_exact = torch.sin(x) * torch.cos(y) * torch.exp(-2 * t / Re)
+            v_exact = -torch.cos(x) * torch.sin(y) * torch.exp(-2 * t / Re)
+            p_exact = (
+                -0.25 * (torch.cos(2 * x) + torch.cos(2 * y)) * torch.exp(-4 * t / Re)
+            )
+
+            pred = self(torch.cat([x, y, t], dim=1))
+            u_pred, v_pred, p_pred = torch.split(pred, 1, dim=1)
+
+            def l2_relative(pred_t, exact_t):
+                return torch.norm(pred_t - exact_t) / torch.norm(exact_t)
+
+            err_u = l2_relative(u_pred, u_exact)
+            err_v = l2_relative(v_pred, v_exact)
+            err_p = l2_relative(p_pred, p_exact)
+
+        loss_pde = self.pde_residual(data)
+
+        print("Navier-Stokes PINN Evaluation:")
+        print(f"  IC Loss:  {loss_ic.item():.6e}")
+        print(f"  BC Loss:  {loss_bc.item():.6e}")
+        print(f"  PDE Loss: {loss_pde.item():.6e}")
+        print(f"  L2 Rel Error u: {err_u.item():.6e}")
+        print(f"  L2 Rel Error v: {err_v.item():.6e}")
+        print(f"  L2 Rel Error p: {err_p.item():.6e}")
+
     def static_params(self) -> dict[str, Any]:
         """Gets the static parameters of the model.
 
