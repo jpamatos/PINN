@@ -33,6 +33,14 @@ class PINNProtocol(Protocol):
         """
         ...
 
+    def evaluate(self, data_loader: Any) -> None:
+        """Evaluates the model on the given data and prints metrics.
+
+        Args:
+            data_loader (Any): Data loader for problem data.
+        """
+        ...
+
     def pde_residual(self, *args: Any, **kwargs: Any) -> torch.Tensor:
         """Computes the PDE residual(s) for the physical system.
 
